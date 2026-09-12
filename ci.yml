@@ -1,0 +1,38 @@
+# include:
+#   - remote: https://raw.githubusercontent.com/actionplatform/ci-gitlab/v1/ci.yml
+#
+# Then extend the job templates below. Images per language:
+#   python:3.12  golang:1.23  node:20  composer:2  maven:3-eclipse-temurin-17  rust:1.80
+
+variables:
+  AP_SCRIPTS: "https://raw.githubusercontent.com/actionplatform/ci-scripts/v1"
+
+.ap-scripts:
+  before_script:
+    - mkdir -p .ap && for s in lib setup check release conventional-commit; do curl -fsSL "$AP_SCRIPTS/$s.sh" -o ".ap/$s.sh"; done && chmod +x .ap/*.sh
+
+.ap-check:
+  extends: .ap-scripts
+  stage: test
+  script:
+    - .ap/setup.sh
+    - .ap/check.sh
+
+.ap-conventional-commit:
+  extends: .ap-scripts
+  stage: test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  variables:
+    GIT_DEPTH: 0
+  script:
+    - AP_BASE="origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" .ap/conventional-commit.sh
+
+.ap-release:
+  extends: .ap-scripts
+  stage: deploy
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+$/
+  script:
+    - git remote set-url origin "https://oauth2:${CI_PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
+    - AP_TAG="$CI_COMMIT_TAG" AP_BRANCH="$CI_DEFAULT_BRANCH" .ap/release.sh
