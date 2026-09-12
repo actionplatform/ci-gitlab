@@ -13,6 +13,8 @@ check:
   extends: .ap-check
 commits:
   extends: .ap-conventional-commit
+gitflow:
+  extends: .ap-gitflow
 release:
   extends: .ap-release
 ```
@@ -21,6 +23,7 @@ release:
 |----------|------|
 | `.ap-check` | setup + lint + format + tests |
 | `.ap-conventional-commit` | Conventional Commits on merge requests |
+| `.ap-gitflow` | branch name and merge target follow git-flow |
 | `.ap-release` | version bump on `vX.Y.Z` tags (needs `CI_PUSH_TOKEN`) |
 
 Tag `vX.Y.Z`; `v1` floats to the latest.
