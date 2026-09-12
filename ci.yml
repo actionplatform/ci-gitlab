@@ -9,7 +9,7 @@ variables:
 
 .ap-scripts:
   before_script:
-    - mkdir -p .ap && for s in lib setup check release conventional-commit; do curl -fsSL "$AP_SCRIPTS/$s.sh" -o ".ap/$s.sh"; done && chmod +x .ap/*.sh
+    - mkdir -p .ap && for s in lib setup check release conventional-commit gitflow gitflow-pr; do curl -fsSL "$AP_SCRIPTS/$s.sh" -o ".ap/$s.sh"; done && chmod +x .ap/*.sh
 
 .ap-check:
   extends: .ap-scripts
@@ -27,6 +27,14 @@ variables:
     GIT_DEPTH: 0
   script:
     - AP_BASE="origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" .ap/conventional-commit.sh
+
+.ap-gitflow:
+  extends: .ap-scripts
+  stage: test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  script:
+    - AP_HEAD="$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" AP_BASE="$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" AP_DEFAULT_BRANCH="$CI_DEFAULT_BRANCH" .ap/gitflow-pr.sh
 
 .ap-release:
   extends: .ap-scripts
