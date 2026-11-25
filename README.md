@@ -11,7 +11,7 @@ stages: [test, deploy]
 
 check:
   extends: .ap-check
-commits:
+conventional-commit:
   extends: .ap-conventional-commit
 gitflow:
   extends: .ap-gitflow
@@ -25,5 +25,7 @@ release:
 | `.ap-conventional-commit` | Conventional Commits on merge requests |
 | `.ap-gitflow` | branch name and merge target follow git-flow |
 | `.ap-release` | version bump on `vX.Y.Z` tags (needs `CI_PUSH_TOKEN`) |
+
+The platform requires the checks `gitflow` and `conventional-commit` on merge requests into `main`, `master` and `develop`, so name the jobs exactly that.
 
 Tag `vX.Y.Z`; `v1` floats to the latest.
