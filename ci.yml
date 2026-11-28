@@ -3,13 +3,15 @@
 #
 # Then extend the job templates below as jobs named gitflow and conventional-commit. Images per language:
 #   python:3.12  golang:1.23  node:20  composer:2  maven:3-eclipse-temurin-17  rust:1.80
+#   csharp: mcr.microsoft.com/dotnet/sdk:9.0  elixir: elixir:1.18  swift: swift:6.0
+#   scala: sbtscala/scala-sbt:eclipse-temurin-17.0.13_11_1.10.5_3.5.2
 
 variables:
   AP_SCRIPTS: "https://raw.githubusercontent.com/actionplatform/ci-scripts/v1"
 
 .ap-scripts:
   before_script:
-    - mkdir -p .ap && for s in lib setup check release conventional-commit gitflow gitflow-pr; do curl -fsSL "$AP_SCRIPTS/$s.sh" -o ".ap/$s.sh"; done && chmod +x .ap/*.sh
+    - command -v curl >/dev/null || { apt-get update -qq && apt-get install -y -qq curl; }; mkdir -p .ap && for s in lib setup check release conventional-commit gitflow gitflow-pr; do curl -fsSL "$AP_SCRIPTS/$s.sh" -o ".ap/$s.sh"; done && chmod +x .ap/*.sh
 
 .ap-check:
   extends: .ap-scripts

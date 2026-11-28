@@ -1,0 +1,42 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  images:
+    name: ${{ matrix.language }}
+    runs-on: ubuntu-latest
+    container: ${{ matrix.image }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: csharp
+            image: mcr.microsoft.com/dotnet/sdk:9.0
+          - language: elixir
+            image: elixir:1.18
+          - language: swift
+            image: swift:6.0
+          - language: scala
+            image: sbtscala/scala-sbt:eclipse-temurin-17.0.13_11_1.10.5_3.5.2
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          repository: actionplatform/ci-scripts
+          ref: v1
+          path: ap-fixtures
+      - name: Fetch scripts
+        run: command -v curl >/dev/null || { apt-get update -qq && apt-get install -y -qq curl; }; mkdir -p "$GITHUB_WORKSPACE/.ap" && for s in lib setup check; do curl -fsSL "https://raw.githubusercontent.com/actionplatform/ci-scripts/v1/$s.sh" -o "$GITHUB_WORKSPACE/.ap/$s.sh"; done && chmod +x "$GITHUB_WORKSPACE"/.ap/*.sh
+      - working-directory: ap-fixtures/tests/fixtures/${{ matrix.language }}
+        run: |
+          "$GITHUB_WORKSPACE/.ap/setup.sh"
+          "$GITHUB_WORKSPACE/.ap/check.sh"
