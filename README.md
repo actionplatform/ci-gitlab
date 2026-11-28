@@ -25,7 +25,7 @@ Images for the languages added with ci-scripts v0.4.0 (each runs setup and check
 |----------|-------|
 | `csharp` | `mcr.microsoft.com/dotnet/sdk:9.0` |
 | `elixir` | `elixir:1.18` |
-| `swift` | `swift:6.0` |
+| `swift` | `swift:6.0` (no curl; the templates install it when missing) |
 | `scala` | `sbtscala/scala-sbt:eclipse-temurin-17.0.13_11_1.10.5_3.5.2` |
 
 | Template | Does |

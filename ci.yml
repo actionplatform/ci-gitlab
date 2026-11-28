@@ -11,7 +11,7 @@ variables:
 
 .ap-scripts:
   before_script:
-    - mkdir -p .ap && for s in lib setup check release conventional-commit gitflow gitflow-pr; do curl -fsSL "$AP_SCRIPTS/$s.sh" -o ".ap/$s.sh"; done && chmod +x .ap/*.sh
+    - command -v curl >/dev/null || { apt-get update -qq && apt-get install -y -qq curl; }; mkdir -p .ap && for s in lib setup check release conventional-commit gitflow gitflow-pr; do curl -fsSL "$AP_SCRIPTS/$s.sh" -o ".ap/$s.sh"; done && chmod +x .ap/*.sh
 
 .ap-check:
   extends: .ap-scripts
